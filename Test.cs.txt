@@ -1,0 +1,82 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace HelloWorld
+{
+    public interface ILogger
+    {
+        void LogMessage(string message);
+    }
+    public class Test
+    {
+        // Handle to logger class to write to the logs
+        ILogger logger = null;
+
+        //Concrete implementation is injected, it can be DatabasesLogger, FileLogger, etc...
+        public Test(ILogger concreteImplementation)
+        {
+            this.logger = concreteImplementation;
+        }
+
+        //This will be called to log message    
+        public void LogMessage(string message)
+        {
+            logger.LogMessage(message);
+        }
+    }
+    class DatabaseLogger : ILogger
+    {
+        //Inheriting class can have different implementation using override of(virtual from base class)
+        public virtual void LogMessage(string message)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    class NewDatabaseLogger : DatabaseLogger
+    {
+        public override void LogMessage(string message)
+        {
+            //New Implementation goes here
+        }
+    }
+
+    class FileLogger : ILogger
+    {
+        public virtual void LogMessage(string message)
+        {
+            throw new NotImplementedException();
+        }
+    }
+    class ConsoleLogger : ILogger
+    {
+        public virtual void LogMessage(string message)
+        {
+            Console.WriteLine(message);
+        }
+    }
+
+
+    //since factory decide on concrete Logger class, consumer is not disturbed by any changes 
+    //to implementation 
+    class LoggerFactory
+    {
+        public static ILogger CreateLogger()
+        {
+            var logType = ConfigurationManager.AppSettings["LogType"];
+            switch (logType.ToLower())
+            {
+                case "database":
+                    return new NewDatabaseLogger();
+                case "file":
+                    return new FileLogger();
+                default:
+                    return new ConsoleLogger();
+            }
+        }
+    }
+}

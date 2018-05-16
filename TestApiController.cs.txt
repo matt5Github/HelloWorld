@@ -1,0 +1,39 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web.Http;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace HelloWorld
+{
+    public class TestApiController : System.Web.Http.ApiController
+    {
+        //Attribute to can be added to authorize caller after authentication is done using security tokens/Oauth etc...
+        [Route("api/TestApi/{type:string}")] /* this route becomes api/[controller]/LogMessage */
+        [HttpPost]
+        public string LogMessage(string message)
+        {
+            //Log message to different sources depending on type defined in config file.
+            //Api calls can be called by mobile apps, web Applications, windows service
+            return "Message Logged Successfully";
+        }
+    }
+
+    [TestClass]
+    public class TestProductController
+    {
+
+        [TestMethod]
+        public void TestApi()
+        {
+            var controller = new TestApiController();
+
+            var result = controller.LogMessage("Hello World");
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(result, "Message Logged Successfully");
+        }
+    }
+}
